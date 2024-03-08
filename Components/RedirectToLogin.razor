@@ -1,0 +1,13 @@
+﻿@inject NavigationManager NavigationManager
+
+@code {
+    //https://github.com/dotnet/aspnetcore/issues/13582
+    protected override void OnAfterRender(bool firstRender)
+    {
+        var returnUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var navigateUrl = string.IsNullOrEmpty(returnUrl)
+            ? $"/Account/SignIn"
+            : $"/Account/SignIn?returnUrl=~/{returnUrl}";
+        NavigationManager.NavigateTo(navigateUrl, forceLoad: true);
+    }
+}

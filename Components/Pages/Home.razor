@@ -1,0 +1,32 @@
+﻿@page "/"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, @(_name)</h1>
+
+<ul>
+    <li>Your email: @(_email)</li>
+    <li>Your location: @(_location)</li>
+</ul>
+
+@code {
+    private string _email = string.Empty, _name = string.Empty, _initial = string.Empty, _location = string.Empty;
+
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthenticationState { get; set; } = default!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var authenticationState = await AuthenticationState;
+        var identity = authenticationState.User.Identity;
+        var claims = ((System.Security.Claims.ClaimsIdentity)identity!).Claims.ToList();
+
+        _email = identity.IsAuthenticated ? claims[2].Value : string.Empty;
+        _name = identity.IsAuthenticated ? claims[1].Value : string.Empty;
+        _location = identity.IsAuthenticated ? claims[11].Value : string.Empty;
+    }
+}
